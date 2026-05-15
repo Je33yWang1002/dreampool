@@ -1,9 +1,15 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "api/*.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     {
-      "src": "/api/dream-process",
-      "dest": "api/dream-process.js"
+      "src": "/api/(.*)",
+      "dest": "api/$1.js"
     }
   ]
 }
