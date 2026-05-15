@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/dream-process",
+      "dest": "api/dream-process.js"
+    }
+  ]
+}
