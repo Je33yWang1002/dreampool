@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>潛意識電影院 測試版</title>
+</head>
+<body>
+    <h1>夢境錄音機</h1>
+    <button id="start">開始錄夢</button>
+    <button id="stop" disabled>說完了</button>
+    <div id="status"></div>
+
+    <script>
+        let chunks = [];
+        let mediaRecorder;
+
+        // 當按下「開始」
+        document.getElementById('start').onclick = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = async () => {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                document.getElementById('status').innerText = '正在解夢中...請稍候';
+                
+                // 把錄音檔 POST 到你的 API
+                const response = await fetch('/api/dream-process', {
+                    method: 'POST',
+                    body: blob
+                });
+                const result = await response.json();
+                console.log(result);
+                document.getElementById('status').innerText = '分析結果：' + JSON.stringify(result, null, 2);
+            };
+            mediaRecorder.start();
+            document.getElementById('start').disabled = true;
+            document.getElementById('stop').disabled = false;
+        };
+
+        // 當按下「停止」
+        document.getElementById('stop').onclick = () => {
+            mediaRecorder.stop();
+            document.getElementById('start').disabled = false;
+            document.getElementById('stop').disabled = true;
+        };
+    </script>
+</body>
+</html>
